@@ -6,3 +6,8 @@ The repository provides a comprehensive toolkit including prompts and Claude/Cod
 3. Produce threat model as per STRIDE guidelines for your services
 4. Generate onboarding guides fot your developers for an easy start
 5. Produce runbook for your applications
+
+
+MIT License with Non-Commercial Clause
+
+Copyright © 2026 Eeran Maiti 📄 See [LICENSE](https://github.com/Maiti0112358/GenAI-Architects-Toolbox/blob/main/LICENSE) for full terms.
