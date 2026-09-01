@@ -6,7 +6,7 @@ A structured set of 15 prompts for generating a complete architecture descriptio
 
 ## Claude Code skill
 
-This prompt suite powers the `/arch-describe` Claude Code skill. Install it by saving [`arch-describe.md`](arch-describe.md) into your `~/.claude/commands/` directory. The skill automates parallel agent execution, consistency passes, diagram generation, and structured file output.
+This prompt suite powers the `/arch-describe` Claude Code skill (https://github.com/Maiti0112358/architects-prompts/blob/main/.claude/skills/arch-describe/SKILL.md). The skill automates parallel agent execution, consistency passes, diagram generation, and structured file output.
 
 **Supported flags:**
 
