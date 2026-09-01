@@ -1,2 +1,2 @@
 # architects-prompts
-Useful prompts for a solution architect
+The architects-prompts repository provides a comprehensive toolkit including prompts and Claude/Codex/GHCP skills for solution architects useful for regular tasks. 
