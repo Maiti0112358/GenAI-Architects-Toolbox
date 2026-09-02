@@ -1,12 +1,14 @@
 # Developer Onboarding Guide - Comprehensive Prompt Suite
 
-A structured prompt suite for generating an evidence-grounded developer onboarding guide from a GitHub repository. It helps a new team member install the toolchain, run the application, understand the architecture and code organization, execute tests, debug common issues, and contribute safely.
+A structured prompt suite for generating an evidence-grounded developer onboarding guide from a remote or local repository. It helps a new team member install the toolchain, run the application, understand the architecture and code organization, execute tests, debug common issues, and contribute safely.
 
 ---
 
-## Claude Code skill
+## AI assistant skill
 
-This prompt suite powers the `/onboarding-guide` Claude Code skill.
+This prompt suite corresponds to the `/onboarding-guide` AI assistant skill.
+
+The first positional input may be a remote repository URL or a local repository path. Quote local paths containing spaces. Inspect local paths directly and record Git provenance when available; never clone or delete the supplied local repository.
 
 **Supported flags:**
 
@@ -31,7 +33,7 @@ This prompt suite powers the `/onboarding-guide` Claude Code skill.
 
 ## Manual usage
 
-Analyse `[REPO_URL]` at `[ANALYSIS_PATH]`. For a monorepo, select one application with `--path`.
+Analyse `[REPOSITORY_INPUT]` at `[ANALYSIS_PATH]`. The input may be a remote URL or local path. For a monorepo, select one application with `--path`.
 
 Before generating:
 
@@ -145,7 +147,7 @@ Write only requested sections. Automatically include prerequisite sections for s
 ## Prompt 1: Overview and prerequisites
 
 ```
-Analyse [REPO_URL] at [ANALYSIS_PATH] and generate the onboarding overview and prerequisites.
+Analyse [REPOSITORY_INPUT] at [ANALYSIS_PATH] and generate the onboarding overview and prerequisites.
 
 Include:
 - Audience and assumed experience.
@@ -161,7 +163,7 @@ For every item include purpose, verification, evidence, confidence, and platform
 ## Prompt 2: Local setup
 
 ```
-Analyse [REPO_URL] at [ANALYSIS_PATH] and generate an ordered local setup guide.
+Analyse [REPOSITORY_INPUT] at [ANALYSIS_PATH] and generate an ordered local setup guide.
 
 Separate:
 1. Repository-root bootstrap and workspace installation.
@@ -176,7 +178,7 @@ For every command include command ID, working directory, shell/platform, prerequ
 ## Prompt 3: Architecture and code organization
 
 ```
-Analyse [REPO_URL] at [ANALYSIS_PATH] and explain the selected application's architecture and code organization.
+Analyse [REPOSITORY_INPUT] at [ANALYSIS_PATH] and explain the selected application's architecture and code organization.
 
 Include:
 - Entry points and representative request/event flow.
@@ -193,7 +195,7 @@ Do not use sibling application facts as evidence.
 ## Prompt 4: Testing and debugging
 
 ```
-Analyse [REPO_URL] at [ANALYSIS_PATH] and document testing and troubleshooting.
+Analyse [REPOSITORY_INPUT] at [ANALYSIS_PATH] and document testing and troubleshooting.
 
 Create a test execution matrix:
 Test | Command | Local/CI | Prerequisites | Network | Data side effects | Isolation | Runtime | Evidence
@@ -209,7 +211,7 @@ Label reset, migration, seed, cleanup, database, container, and diagnostic comma
 ## Prompt 5: Contribution workflow and first change
 
 ```
-Analyse [REPO_URL] at [ANALYSIS_PATH] and document repository-supported contribution practices.
+Analyse [REPOSITORY_INPUT] at [ANALYSIS_PATH] and document repository-supported contribution practices.
 
 Cover:
 - Branch/fork workflow.

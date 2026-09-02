@@ -1,6 +1,6 @@
 ﻿---
 name: runbook-generate
-description: Generate comprehensive operational runbooks from a GitHub repository including deployment, troubleshooting, scaling, and incident response procedures
+description: Generate comprehensive operational runbooks from a remote or local repository including deployment, troubleshooting, scaling, and incident response procedures
 allowed-tools: WebFetch, Bash(gh auth status:*), Bash(gh repo view:*), Bash(gh api repos/*:*), Bash(git clone:*), Bash(Remove-Item:*), Read, Glob, Grep, Write, Agent
 ---
 
@@ -12,7 +12,7 @@ Parse `$ARGUMENTS` for the following before doing anything else:
 
 | Argument | Format | Default | Description |
 |----------|--------|---------|-------------|
-| Repo URL | First positional value | *(required — ask if missing)* | The GitHub repository to analyze |
+| Repository URL or path | First positional value | *(required — ask if missing)* | A GitHub URL or local repository path; quote paths containing spaces |
 | `--runbooks` | `--runbooks deploy,troubleshoot` | All 7 runbooks | Comma-separated list of runbooks to generate: `deploy`, `rollback`, `scale`, `troubleshoot`, `secrets`, `monitor`, `disaster` |
 | `--output` | `--output ./runbooks` | Current working directory | Directory where runbook markdown files are written |
 | `--path` | `--path services/api` | Repo root | Subdirectory within the repo to treat as the analysis root; use for monorepos |
@@ -23,6 +23,7 @@ Parse `$ARGUMENTS` for the following before doing anything else:
 
 ```text
 /runbook-generate https://github.com/org/repo
+/runbook-generate "C:\Repos\my-repo"
 /runbook-generate https://github.com/org/repo --runbooks deploy,rollback
 /runbook-generate https://github.com/org/repo --output ./docs/operations
 /runbook-generate https://github.com/org/monorepo --path services/api
@@ -36,22 +37,31 @@ Parse `$ARGUMENTS` for the following before doing anything else:
 
 ## Repo Access Strategy
 
-**Step 1 — Extract the repo URL from `$ARGUMENTS`:**
-Parse `$ARGUMENTS` to isolate the repo URL (the first positional value, not prefixed with `--`). Store it as `REPO_URL`. Example:
+**Step 1 — Extract and classify the repository input from `$ARGUMENTS`:**
+Parse the first positional value (not prefixed with `--`); quote local paths containing spaces. Store it as `REPOSITORY_INPUT`.
+
+- If it starts with `http://` or `https://`, classify it as `REMOTE` and store it as `REPO_URL`.
+- Otherwise, resolve it to an existing local directory and store its canonical absolute path as `REPO_ROOT`. If it is missing or not a directory, stop with a diagnostic. Never clone or delete a local input.
+
+Examples:
 - `$ARGUMENTS` = `https://github.com/org/repo --runbooks deploy,scale --output ./out`
-- `REPO_URL` = `https://github.com/org/repo`
+- `REPOSITORY_INPUT` = `https://github.com/org/repo`; `REPO_URL` = `https://github.com/org/repo`
+- `$ARGUMENTS` = `"C:\Repos\my-repo" --runbooks deploy`
+- `REPOSITORY_INPUT` = `C:\Repos\my-repo`; `REPO_ROOT` = the canonical absolute path
 - Also derive `REPO_OWNER` and `REPO_NAME` by splitting the URL path.
 
 **Step 2 — Determine access method:**
 
-First, run `gh auth status` to determine authentication state:
+For a `LOCAL` input, skip GitHub authentication and cloning. Use `REPO_ROOT` for all discovery and generation reads. If it is a Git repository, record its branch and commit SHA using local Git commands; otherwise record branch and commit SHA as N/A and identify the source as a non-Git local directory.
+
+For a `REMOTE` input, first run `gh auth status` to determine authentication state:
 - **Unauthenticated:** Prefer cloning to avoid API rate limits. Only use the API if cloning fails.
 - **Authenticated:** Use GitHub API for public repos. If any `gh api` call returns HTTP 403 or 429, retry up to 3 times with exponential backoff (5s, 10s, 20s). If all retries fail, fall back to cloning.
 
 - **Public repo** (authenticated user): use `gh api repos/REPO_OWNER/REPO_NAME/contents/{path}` and `gh api repos/REPO_OWNER/REPO_NAME/git/trees/HEAD?recursive=1`
-- **Private repo or unauthenticated**: clone the repo once to a temp directory (e.g. `./runbook-tmp-{unix-timestamp}/`) and record the absolute path as `localClonePath`. All subsequent agents read from that local clone.
+- **Private repo or unauthenticated**: clone the remote repo once to a temp directory (e.g. `./runbook-tmp-{unix-timestamp}/`) and record the absolute path as `localClonePath`. All subsequent agents read from that local clone.
 
-After all runbooks complete (or after dry-run), delete the temp clone directory if one was created. Always perform cleanup in a finally-style step, including when discovery or generation fails.
+After all runbooks complete (or after dry-run), delete only a temporary clone created for a `REMOTE` input. Always perform cleanup in a finally-style step, including when discovery or generation fails. Never delete `REPO_ROOT` for a `LOCAL` input.
 
 **Step 3 — Resolve the analysis path:**
 - If `--path` was provided, set `ANALYSIS_PATH` to that subdirectory. Verify it exists; if not, stop and report an error.
@@ -193,6 +203,7 @@ Before generating any runbooks, run one discovery agent to collect operational m
   },
   "analysisPath": "string — relative path from repo root"
 }
+```
 
 Pass this JSON object to every runbook generation agent. Agents must restrict evidence and citations to `ANALYSIS_PATH` and must not invent values that are absent from the repository.
 

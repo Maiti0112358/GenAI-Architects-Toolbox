@@ -13,10 +13,10 @@ Use the skill name with a repository URL or local repository path. Assistant-spe
 
 | Skill | Purpose | How to use |
 |---|---|---|
-| `arch-describe` | Produces a comprehensive, structured architecture description from repository evidence. | Invoke with a repository URL or local path, for example `/arch-describe https://github.com/org/repo`. |
+| `arch-describe` | Produces a comprehensive, structured architecture description from repository evidence. | Invoke with a remote URL or local path, for example `/arch-describe C:\Repos\my-repo`. |
 | `compliance-check` | Assesses GDPR, SOC 2, ISO 27001, or PCI-DSS readiness and produces framework-specific reports plus an evidence matrix. | Specify one or more frameworks, for example `/compliance-check ./repo --framework GDPR,SOC2`. |
 | `onboarding-guide` | Creates an evidence-grounded developer guide covering prerequisites, setup, architecture, code organization, testing, debugging, and contribution. | Invoke for the whole repository or a monorepo application, for example `/onboarding-guide ./repo --app apps/web`. |
-| `runbook-generate` | Generates operational runbooks for deployment, troubleshooting, scaling, and incident response. | Invoke with the target repository, for example `/runbook-generate https://github.com/org/repo`. |
+| `runbook-generate` | Generates operational runbooks for deployment, troubleshooting, scaling, and incident response. | Invoke with a remote URL or local path, for example `/runbook-generate C:\Repos\my-repo`. |
 | `threat-model` | Produces an evidence-grounded STRIDE model with data-flow diagrams, trust boundaries, attack trees, a prioritized risk register, draw.io diagrams, and Markdown. | Invoke with a repository or system description, for example `/threat-model ./repo`. |
 
 ## Corresponding prompts
@@ -45,7 +45,7 @@ deliverables.
 
 ### Setup
 
-1. Clone the repository and install Python 3.
+1. Install Python 3 and either clone a remote repository or identify an existing local repository.
 2. From the repository root, create the assistant adapters:
    - Windows PowerShell: `.\scripts\link-skills.ps1`
    - macOS/Linux: `sh ./scripts/link-skills.sh`

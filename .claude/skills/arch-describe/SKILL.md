@@ -1,6 +1,6 @@
 ﻿---
 name: arch-describe
-description: Generate a comprehensive architecture description document from a GitHub repository using 15 structured analysis sections
+description: Generate a comprehensive architecture description document from a remote or local repository using 15 structured analysis sections
 allowed-tools: WebFetch, Bash(gh repo view:*), Bash(gh api repos/*:*), Bash(git clone:*), Read, Glob, Grep, Write, Agent
 ---
 
@@ -12,7 +12,7 @@ Parse `$ARGUMENTS` for the following before doing anything else:
 
 | Argument | Format | Default | Description |
 |----------|--------|---------|-------------|
-| Repo URL | First positional value | *(required — ask if missing)* | The GitHub repository to analyse |
+| Repository URL or path | First positional value | *(required — ask if missing)* | A GitHub URL or local repository path to analyse; quote paths containing spaces |
 | `--sections` | `--sections 1,4,7` | All 15 sections | Comma-separated list of section numbers to run; skip all others and their agents |
 | `--output` | `--output ./docs/arch` | Current working directory | Directory where `architecture-description.md` and the `diagrams/` folder are written |
 | `--path` | `--path services/api` | Repo root | Subdirectory within the repo to treat as the analysis root; use for monorepos to focus on one service |
@@ -22,6 +22,7 @@ Parse `$ARGUMENTS` for the following before doing anything else:
 Examples:
 ```
 /arch-describe https://github.com/org/repo
+/arch-describe "C:\Repos\my-repo"
 /arch-describe https://github.com/org/repo --sections 5,7,12
 /arch-describe https://github.com/org/repo --output ./docs/architecture
 /arch-describe https://github.com/org/repo --sections 1,2,3 --output ./out
@@ -41,13 +42,24 @@ When `--sections` is provided, only run the specified sections. Skip their batch
 
 ## Repo Access Strategy
 
-**Step 1 — Extract the repo URL from `$ARGUMENTS` before doing anything else:**
-Parse `$ARGUMENTS` to isolate the repo URL (the first positional value, not prefixed with `--`). Store it as `REPO_URL`. All subsequent steps use `REPO_URL`, never the raw `$ARGUMENTS` string. Example:
+**Step 1 — Extract and classify the repository input before doing anything else:**
+Parse `$ARGUMENTS` to isolate the first positional value (not prefixed with `--`). Quote local paths containing spaces. Store it as `REPOSITORY_INPUT`; all subsequent steps use the resolved value, never the raw `$ARGUMENTS` string.
+
+- If it is an `http://` or `https://` URL, classify it as `REMOTE` and store it as `REPO_URL`.
+- Otherwise, resolve it to an existing local directory and classify it as `LOCAL`; store its canonical absolute path as `REPO_ROOT`. If it does not exist or is not a directory, stop with a diagnostic. Do not clone or delete a local input.
+
+Examples:
 - `$ARGUMENTS` = `https://github.com/org/repo --sections 5,7 --output ./out`
-- `REPO_URL` = `https://github.com/org/repo`
+- `REPOSITORY_INPUT` = `https://github.com/org/repo`; `REPO_URL` = `https://github.com/org/repo`
+- `$ARGUMENTS` = `"C:\Repos\my-repo" --output ./out`
+- `REPOSITORY_INPUT` = `C:\Repos\my-repo`; `REPO_ROOT` = the canonical absolute path
 - Also derive `REPO_OWNER` and `REPO_NAME` by splitting the URL path.
 
 **Step 2 — Determine access method** and use it consistently for all agents:
+
+- **Local input:** use `REPO_ROOT` directly. Read files only from that directory and `ANALYSIS_PATH`; do not call GitHub APIs, clone, or remove the input. If it is a Git repository, record branch and commit SHA using local Git commands; otherwise record commit SHA and branch as N/A and label the source as a non-Git local directory.
+
+For a remote input, use the following GitHub strategy:
 
 First, run `gh auth status` to determine authentication state:
 - **Unauthenticated:** the GitHub API allows only 60 requests/hour. With 15 parallel agents each making multiple calls, this limit will be exhausted in seconds. **Prefer cloning (treat as private)** to avoid hitting the limit. Only use the API if cloning fails.

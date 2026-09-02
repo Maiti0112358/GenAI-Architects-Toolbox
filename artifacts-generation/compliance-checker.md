@@ -4,9 +4,11 @@ A structured set of prompts for assessing a repository against GDPR, SOC 2, ISO 
 
 ---
 
-## Claude Code skill
+## AI assistant skill
 
-This prompt suite powers the `/compliance-check` Claude Code skill.
+This prompt suite corresponds to the `/compliance-check` AI assistant skill.
+
+The first positional input may be a remote GitHub URL or a local repository path. Quote local paths containing spaces. For a local path, inspect the directory directly, record its canonical path and Git provenance when available, and never clone or delete the supplied repository. Clean up only temporary clones created for remote inputs.
 
 **Supported flags:**
 
@@ -35,7 +37,7 @@ This is an evidence-based readiness assessment, not legal advice, an audit opini
 
 ## Manual usage
 
-Analyse `[REPO_URL]` at `[ANALYSIS_PATH]`. Before assessment:
+Analyse `[REPOSITORY_INPUT]` at `[ANALYSIS_PATH]`. The input may be a remote URL or local path. Before assessment:
 
 1. Record repository/path, branch, commit SHA, analysis path, and timestamp.
 2. Validate selected framework names.
@@ -177,7 +179,7 @@ For operating-effectiveness evidence, record owner, test procedure, test period,
 ## Prompt 1: Discovery and applicability
 
 ```
-Analyse [REPO_URL] at [ANALYSIS_PATH]. Establish provenance, framework gates, scope, and applicability.
+Analyse [REPOSITORY_INPUT] at [ANALYSIS_PATH]. Establish provenance, framework gates, scope, and applicability.
 
 Identify:
 - In-scope services, environments, assets, data, vendors, and trust boundaries

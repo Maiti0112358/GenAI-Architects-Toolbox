@@ -1,6 +1,6 @@
 ---
 name: onboarding-guide
-description: Generate an evidence-grounded developer onboarding guide from a GitHub repository, covering prerequisites, local setup, key architecture concepts, code organization, testing, debugging, and contribution workflow for new team members.
+description: Generate an evidence-grounded developer onboarding guide from a remote or local repository, covering prerequisites, local setup, key architecture concepts, code organization, testing, debugging, and contribution workflow for new team members.
 allowed-tools: WebFetch, Bash(gh auth status:*), Bash(gh repo view:*), Bash(gh api repos/*:*), Bash(git clone:*), Bash(git rev-parse:*), Bash(git status:*), Bash(Remove-Item:*), Read, Glob, Grep, Write, Agent
 ---
 
@@ -51,7 +51,7 @@ When `--path` is supplied, set `ANALYSIS_PATH` to that application. Verify it ex
 
 ### Input handling
 
-For local paths, verify Git status and commit without cloning. For GitHub URLs, clone at most once. For non-Git directories, set commit to N/A and label supplied context. If access fails, stop with a diagnostic.
+Classify the first positional input as `REMOTE` when it starts with `http://` or `https://`; otherwise resolve it to an existing local directory as `LOCAL`. Quote local paths containing spaces. For local paths, verify Git status and commit without cloning. For GitHub URLs, clone at most once. For non-Git directories, set commit and branch to N/A and label supplied context. If access fails, stop with a diagnostic. Never delete or overwrite a supplied local repository; clean up only a temporary clone created for a remote URL.
 Resolve repository access and analysis scope before writing:
 
 1. Record repository identity, branch, commit SHA, and local clone path if cloning is required.

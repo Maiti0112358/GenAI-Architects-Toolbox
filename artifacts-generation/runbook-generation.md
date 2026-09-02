@@ -1,18 +1,20 @@
 # Runbook Generation — Comprehensive Prompt Suite
 
-A structured set of prompts for generating evidence-grounded operational runbooks from a GitHub repository. The suite covers deployment, rollback, scaling, troubleshooting, secrets rotation, monitoring, and disaster recovery.
+A structured set of prompts for generating evidence-grounded operational runbooks from a remote or local repository. The suite covers deployment, rollback, scaling, troubleshooting, secrets rotation, monitoring, and disaster recovery.
 
 ---
 
-## Claude Code skill
+## AI assistant skill
 
-This prompt suite powers the `/runbook-generate` Claude Code skill.
+This prompt suite corresponds to the `/runbook-generate` AI assistant skill.
+
+The first positional input may be a remote repository URL or a local repository path. Quote local paths containing spaces. Inspect local paths directly and record Git provenance when available; never clone or delete the supplied local repository. Clean up only temporary clones created for remote inputs.
 
 **Supported flags:**
 
 | Flag | Format | Default | Description |
 |------|--------|---------|-------------|
-| Repo URL | First positional value | *(required)* | GitHub repository to analyse |
+| Repository URL or path | First positional value | *(required)* | Remote repository URL or local repository path |
 | `--runbooks` | `--runbooks deploy,troubleshoot` | All 7 | Runbooks to generate |
 | `--output` | `--output ./docs/operations` | Current directory | Output directory |
 | `--path` | `--path services/api` | Repo root | Monorepo subdirectory to analyse |
@@ -21,6 +23,7 @@ This prompt suite powers the `/runbook-generate` Claude Code skill.
 
 ```
 /runbook-generate https://github.com/org/repo
+/runbook-generate "C:\Repos\my-repo"
 /runbook-generate https://github.com/org/repo --runbooks deploy,rollback
 /runbook-generate https://github.com/org/repo --path services/api
 /runbook-generate https://github.com/org/repo --output ./docs/operations --force
@@ -31,7 +34,7 @@ This prompt suite powers the `/runbook-generate` Claude Code skill.
 
 ## Manual usage
 
-Analyse the repository at `[REPO_URL]`. For monorepos, use `[ANALYSIS_PATH]` to identify the service or application being documented.
+Analyse the repository at `[REPOSITORY_INPUT]`. The input may be a remote URL or local path. For monorepos, use `[ANALYSIS_PATH]` to identify the service or application being documented.
 
 Before writing anything:
 
@@ -131,7 +134,7 @@ Write only requested runbooks. Omit skipped files entirely. In dry-run mode, wri
 ## Prompt 1: Deployment Procedure
 
 ```
-Analyse [REPO_URL] at [ANALYSIS_PATH] and generate an evidence-grounded deployment runbook.
+Analyse [REPOSITORY_INPUT] at [ANALYSIS_PATH] and generate an evidence-grounded deployment runbook.
 
 Create:
 1.1 Prerequisites — tools and versions, access, environment variables, and required secrets
@@ -147,7 +150,7 @@ Use placeholders for environment-specific values. Cite every step. Mark undocume
 ## Prompt 2: Rollback Procedure
 
 ```
-Analyse [REPO_URL] at [ANALYSIS_PATH] and generate an evidence-grounded rollback runbook.
+Analyse [REPOSITORY_INPUT] at [ANALYSIS_PATH] and generate an evidence-grounded rollback runbook.
 
 Create:
 2.1 Rollback Triggers — documented failure conditions, thresholds, and decision logic
@@ -162,7 +165,7 @@ Do not invent rollback commands or data-reversal procedures.
 ## Prompt 3: Scaling Operations
 
 ```
-Analyse [REPO_URL] at [ANALYSIS_PATH] and generate a scaling runbook.
+Analyse [REPOSITORY_INPUT] at [ANALYSIS_PATH] and generate a scaling runbook.
 
 Create:
 3.1 Horizontal Scaling — replicas, HPA/autoscaling, and manual commands
@@ -177,7 +180,7 @@ Separate implemented scaling from recommended future actions.
 ## Prompt 4: Troubleshooting Guide
 
 ```
-Analyse [REPO_URL] at [ANALYSIS_PATH] and generate a troubleshooting guide.
+Analyse [REPOSITORY_INPUT] at [ANALYSIS_PATH] and generate a troubleshooting guide.
 
 Create:
 4.1 Common Issues — repository issues, error handling, TODO/FIXME/HACK items
@@ -193,7 +196,7 @@ Use a table with Symptom, Evidence-backed Cause, Diagnostic Steps, and Resolutio
 ## Prompt 5: Secrets Rotation
 
 ```
-Analyse [REPO_URL] at [ANALYSIS_PATH] and generate a secrets-rotation runbook.
+Analyse [REPOSITORY_INPUT] at [ANALYSIS_PATH] and generate a secrets-rotation runbook.
 
 Create:
 5.1 Secret Inventory — credentials, API keys, certificates, OAuth secrets, and encryption keys
@@ -208,7 +211,7 @@ Never reproduce secret values. Cite only names, purposes, and safe evidence loca
 ## Prompt 6: Monitoring and Alerting
 
 ```
-Analyse [REPO_URL] at [ANALYSIS_PATH] and generate a monitoring runbook.
+Analyse [REPOSITORY_INPUT] at [ANALYSIS_PATH] and generate a monitoring runbook.
 
 Create:
 6.1 Monitoring Stack — logging, metrics, tracing, and alerting systems
@@ -223,7 +226,7 @@ Use a Metric, Threshold, Severity, Action table. Do not invent thresholds.
 ## Prompt 7: Disaster Recovery
 
 ```
-Analyse [REPO_URL] at [ANALYSIS_PATH] and generate a disaster-recovery runbook.
+Analyse [REPOSITORY_INPUT] at [ANALYSIS_PATH] and generate a disaster-recovery runbook.
 
 Create:
 7.1 Disaster Scenarios — only scenarios relevant to evidenced architecture

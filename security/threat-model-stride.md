@@ -4,9 +4,11 @@ A structured set of prompts for generating an evidence-grounded STRIDE threat mo
 
 ---
 
-## Claude Code skill
+## AI assistant skill
 
-This prompt suite powers the `/threat-model` Claude Code skill.
+This prompt suite corresponds to the `/threat-model` AI assistant skill.
+
+The first positional input may be a remote repository URL, a local repository path, or a supplied system description. Quote local paths containing spaces. Inspect local paths directly and record Git provenance when available; never clone or delete the supplied local repository.
 
 **Supported flags:**
 
@@ -33,7 +35,7 @@ This is an architecture risk assessment, not a penetration test, exploit verific
 
 ## Manual usage
 
-Analyse `[REPO_URL]` at `[ANALYSIS_PATH]`, or analyse the supplied system description when no repository is available.
+Analyse `[REPOSITORY_INPUT]` at `[ANALYSIS_PATH]`, or analyse the supplied system description when no repository is available.
 
 Before writing anything:
 
@@ -139,7 +141,7 @@ Write only requested sections and artifacts when `--sections` is supplied. List 
 ## Prompt 1: Discovery and Canonical Model
 
 ```
-Analyse [REPO_URL] at [ANALYSIS_PATH]. Establish provenance and create the canonical inventory.
+Analyse [REPOSITORY_INPUT] at [ANALYSIS_PATH]. Establish provenance and create the canonical inventory.
 
 Identify:
 - External actors and systems

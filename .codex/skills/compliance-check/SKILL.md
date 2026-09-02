@@ -1,6 +1,6 @@
 ---
 name: compliance-check
-description: Assess a repository against GDPR, SOC 2, ISO 27001, and PCI-DSS requirements, producing framework-specific compliance reports and an evidence matrix showing covered, partially covered, missing, and unknown controls with repository locations. Use for compliance readiness reviews, gap assessments, audit preparation, and evidence discovery.
+description: Assess a remote or local repository against GDPR, SOC 2, ISO 27001, and PCI-DSS requirements, producing framework-specific compliance reports and an evidence matrix showing covered, partially covered, missing, and unknown controls with repository locations. Use for compliance readiness reviews, gap assessments, audit preparation, and evidence discovery.
 allowed-tools: WebFetch, Bash(gh auth status:*), Bash(gh repo view:*), Bash(gh api repos/*:*), Bash(git clone:*), Bash(git rev-parse:*), Bash(git status:*), Read, Glob, Grep, Write, Agent
 ---
 
@@ -18,6 +18,15 @@ Parse `$ARGUMENTS` before analysis:
 | `--path` | `--path services/api` | Repository root | Monorepo analysis path |
 | `--force` | Flag | Off | Overwrite existing output |
 | `--dry-run` | Flag | Off | Discover scope and planned artifacts without writing |
+
+### Repository input and access
+
+The first positional value may be a remote GitHub URL or a local repository path. Quote local paths containing spaces.
+
+- For `http://` or `https://` input, classify the source as `REMOTE`, resolve the repository through the approved GitHub access strategy, and clone at most once when API access is unavailable or unsuitable.
+- For any other input, resolve it to an existing local directory and classify the source as `LOCAL`. Use that directory directly; do not call GitHub APIs, clone it, or remove it. If it is a Git repository, record the canonical path, branch, and commit SHA with local Git commands. For a non-Git directory, record branch and commit SHA as N/A and label the evidence source accordingly.
+- Record the original repository URL or canonical local path, access method, commit/branch provenance, analysis path, inspected files, exclusions, and tool failures in every report.
+- Clean up only temporary clones created for remote input. Never delete or overwrite the supplied local repository.
 
 ### Framework selection semantics
 

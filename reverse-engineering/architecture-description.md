@@ -1,18 +1,18 @@
 # Architecture Description — Comprehensive Prompt Suite
 
-A structured set of 15 prompts for generating a complete architecture description from any GitHub repository. Each prompt covers a distinct architectural concern and produces a focused, evidence-grounded output section.
+A structured set of 15 prompts for generating a complete architecture description from a remote or local repository. Each prompt covers a distinct architectural concern and produces a focused, evidence-grounded output section.
 
 ---
 
-## Claude Code skill
+## AI assistant skill
 
-This prompt suite powers the `/arch-describe` Claude Code skill (https://github.com/Maiti0112358/architects-prompts/blob/main/.claude/skills/arch-describe/SKILL.md). The skill automates parallel agent execution, consistency passes, diagram generation, and structured file output.
+This prompt suite corresponds to the `/arch-describe` skill. The skill automates parallel agent execution, consistency passes, diagram generation, and structured file output.
 
 **Supported flags:**
 
 | Flag | Format | Default | Description |
 |------|--------|---------|-------------|
-| Repo URL | First positional value | *(required)* | GitHub repository to analyse |
+| Repository URL or path | First positional value | *(required)* | Remote repository URL or local repository path; quote paths containing spaces |
 | `--sections` | `--sections 1,4,7` | All 15 | Comma-separated list of section numbers to run |
 | `--output` | `--output ./docs/arch` | Current directory | Directory for output files |
 | `--path` | `--path services/api` | Repo root | Monorepo subdirectory to focus on |
@@ -21,6 +21,7 @@ This prompt suite powers the `/arch-describe` Claude Code skill (https://github.
 
 ```
 /arch-describe https://github.com/org/repo
+/arch-describe "C:\Repos\my-repo"
 /arch-describe https://github.com/org/repo --sections 5,7,12
 /arch-describe https://github.com/org/repo --path services/payments
 /arch-describe https://github.com/org/repo --output ./docs/arch --force
@@ -31,7 +32,7 @@ This prompt suite powers the `/arch-describe` Claude Code skill (https://github.
 
 ## Manual usage
 
-Run each prompt in sequence, substituting `[REPO_URL]` with the target repository URL. For monorepos, also substitute `[ANALYSIS_PATH]` with the service subdirectory (e.g. `services/payments`).
+Run each prompt in sequence, substituting `[REPOSITORY_INPUT]` with the target repository URL or canonical local repository path. For monorepos, also substitute `[ANALYSIS_PATH]` with the service subdirectory (e.g. `services/payments`). For local paths, inspect the files directly and record the local path, branch, and commit SHA when available; never clone or delete the supplied repository.
 
 **Prerequisite:** Add the repository to your LLM context, or provide the URL and let the model fetch it. Not every prompt will yield results for every repository — availability of information varies. Use the N/A rule (see Grounding Rules below) for any topic not covered by the repo.
 
@@ -129,7 +130,7 @@ All diagrams are draw.io XML files (see [Diagram Format](#diagram-format) below)
 ## Prompt 1: Introduction
 
 ```
-Analyze the GitHub repository [REPO_URL] (subdirectory: [ANALYSIS_PATH] if applicable)
+Analyze the repository [REPOSITORY_INPUT] (subdirectory: [ANALYSIS_PATH] if applicable)
 and generate the Introduction section for an architecture description.
 Apply the grounding rules strictly — every claim must cite a file, config, issue, or doc.
 
@@ -149,7 +150,7 @@ Create the following subsections:
 ## Prompt 2: Context
 
 ```
-Analyze the GitHub repository [REPO_URL] (subdirectory: [ANALYSIS_PATH] if applicable)
+Analyze the repository [REPOSITORY_INPUT] (subdirectory: [ANALYSIS_PATH] if applicable)
 and generate the Context section for an architecture description.
 Do not include infrastructure, deployment, or technology stack details — those belong
 in later sections. Apply the grounding rules strictly.
@@ -171,7 +172,7 @@ Create the following subsections:
 ## Prompt 3: Architecture Overview
 
 ```
-Analyze the GitHub repository [REPO_URL] (subdirectory: [ANALYSIS_PATH] if applicable)
+Analyze the repository [REPOSITORY_INPUT] (subdirectory: [ANALYSIS_PATH] if applicable)
 and generate the Architecture Overview section. Apply the grounding rules strictly.
 
 Create the following subsections:
@@ -191,7 +192,7 @@ Create the following subsections:
 ## Prompt 4: Components and Structure
 
 ```
-Analyze the GitHub repository [REPO_URL] (subdirectory: [ANALYSIS_PATH] if applicable)
+Analyze the repository [REPOSITORY_INPUT] (subdirectory: [ANALYSIS_PATH] if applicable)
 and generate the Components and Structure section. Apply the grounding rules strictly.
 Produce draw.io XML diagrams for all diagram subsections.
 
@@ -216,7 +217,7 @@ Create the following subsections:
 ## Prompt 5: Technology Stack
 
 ```
-Analyze the GitHub repository [REPO_URL] (subdirectory: [ANALYSIS_PATH] if applicable)
+Analyze the repository [REPOSITORY_INPUT] (subdirectory: [ANALYSIS_PATH] if applicable)
 and generate the Technology Stack section. Apply the grounding rules strictly —
 list only technologies that are explicitly declared in manifests, config files,
 or source imports. Do not infer from framework conventions.
@@ -238,7 +239,7 @@ Create the following subsections:
 ## Prompt 6: Deployment and Infrastructure
 
 ```
-Analyze the GitHub repository [REPO_URL] (subdirectory: [ANALYSIS_PATH] if applicable)
+Analyze the repository [REPOSITORY_INPUT] (subdirectory: [ANALYSIS_PATH] if applicable)
 and generate the Deployment and Infrastructure section. Apply the grounding rules strictly.
 Also check the repository root for CI/CD configs (.github/workflows/, Jenkinsfile, etc.)
 and infrastructure files even if they lie outside the analysis subdirectory.
@@ -264,7 +265,7 @@ Create the following subsections:
 ## Prompt 7: Security
 
 ```
-Analyze the GitHub repository [REPO_URL] (subdirectory: [ANALYSIS_PATH] if applicable)
+Analyze the repository [REPOSITORY_INPUT] (subdirectory: [ANALYSIS_PATH] if applicable)
 and generate the Security section. Apply the grounding rules strictly for facts about
 the codebase. For threat modeling (subsection 7.5), hedged language (may/could/might)
 is permitted when describing attack vectors and failure scenarios.
@@ -288,7 +289,7 @@ Create the following subsections:
 ## Prompt 8: Performance and Scalability
 
 ```
-Analyze the GitHub repository [REPO_URL] (subdirectory: [ANALYSIS_PATH] if applicable)
+Analyze the repository [REPOSITORY_INPUT] (subdirectory: [ANALYSIS_PATH] if applicable)
 and generate the Performance and Scalability section. Apply the grounding rules strictly
 for documented requirements and implemented strategies. Hedged language is permitted
 for anticipated bottlenecks and failure scenarios. Produce a draw.io XML diagram
@@ -313,7 +314,7 @@ Create the following subsections:
 ## Prompt 9: Reliability and Availability
 
 ```
-Analyze the GitHub repository [REPO_URL] (subdirectory: [ANALYSIS_PATH] if applicable)
+Analyze the repository [REPOSITORY_INPUT] (subdirectory: [ANALYSIS_PATH] if applicable)
 and generate the Reliability and Availability section. Apply the grounding rules strictly
 for documented requirements and implemented patterns. Hedged language is permitted
 for failure mode descriptions.
@@ -336,7 +337,7 @@ Create the following subsections:
 ## Prompt 10: Maintainability and Extensibility
 
 ```
-Analyze the GitHub repository [REPO_URL] (subdirectory: [ANALYSIS_PATH] if applicable)
+Analyze the repository [REPOSITORY_INPUT] (subdirectory: [ANALYSIS_PATH] if applicable)
 and generate the Maintainability and Extensibility section.
 Apply the grounding rules strictly.
 
@@ -359,7 +360,7 @@ Create the following subsections:
 ## Prompt 11: Governance and Compliance
 
 ```
-Analyze the GitHub repository [REPO_URL] (subdirectory: [ANALYSIS_PATH] if applicable)
+Analyze the repository [REPOSITORY_INPUT] (subdirectory: [ANALYSIS_PATH] if applicable)
 and generate the Governance and Compliance section. Apply the grounding rules strictly.
 Also check the repository root for licence files (LICENCE, LICENSE, COPYING, NOTICE)
 even if they lie outside the analysis subdirectory.
@@ -382,7 +383,7 @@ Create the following subsections:
 ## Prompt 12: Dependencies and Integrations
 
 ```
-Analyze the GitHub repository [REPO_URL] (subdirectory: [ANALYSIS_PATH] if applicable)
+Analyze the repository [REPOSITORY_INPUT] (subdirectory: [ANALYSIS_PATH] if applicable)
 and generate the Dependencies and Integrations section. Apply the grounding rules strictly.
 Produce a draw.io XML diagram for subsection 12.5.
 
@@ -405,7 +406,7 @@ Create the following subsections:
 ## Prompt 13: Observability and Monitoring
 
 ```
-Analyze the GitHub repository [REPO_URL] (subdirectory: [ANALYSIS_PATH] if applicable)
+Analyze the repository [REPOSITORY_INPUT] (subdirectory: [ANALYSIS_PATH] if applicable)
 and generate the Observability and Monitoring section. Apply the grounding rules strictly.
 Produce a draw.io XML diagram for subsection 13.6.
 
@@ -430,7 +431,7 @@ Create the following subsections:
 ## Prompt 14: Evolution and Roadmap *(run only if evidence is available)*
 
 ```
-Analyze the GitHub repository [REPO_URL] (subdirectory: [ANALYSIS_PATH] if applicable)
+Analyze the repository [REPOSITORY_INPUT] (subdirectory: [ANALYSIS_PATH] if applicable)
 and generate the Evolution and Roadmap section. Apply the grounding rules strictly —
 only document items evidenced by open issues, ADRs, TODOs, or CHANGELOG entries.
 Hedged language (may/could/might) is permitted for planned future states

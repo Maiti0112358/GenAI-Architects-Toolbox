@@ -1,10 +1,10 @@
 ## Purpose
-The architects-prompts/reverse-engineering provides a comprehensive toolkit for solution architects to perform automated architecture reverse-engineering from any GitHub repository. It contains a structured set of 15 prompts and a Claude Code skill that generates complete architecture description documents grounded in actual codebase evidence.
+The architects-prompts/reverse-engineering provides a comprehensive toolkit for solution architects to perform automated architecture reverse-engineering from a remote or local repository. It contains a structured set of 15 prompts and an assistant-agnostic skill that generates complete architecture description documents grounded in actual codebase evidence.
 
 ## Key Features
 **15-section architecture analysis framework** covering all architectural concerns from introduction to evolution
 
-**Claude Code skill integration** via /arch-describe command for automated, parallel execution
+**AI assistant skill integration** via `/arch-describe` for automated, parallel execution
 
 **Evidence-based analysis** where every claim must be directly traceable to source code, configuration, or documentation
 
@@ -13,6 +13,8 @@ The architects-prompts/reverse-engineering provides a comprehensive toolkit for 
 **Flexible execution** to run all sections or cherry-pick specific ones with --sections
 
 **Dry-run mode** to preview the analysis plan before committing to full execution
+
+**Remote and local repository support** using either a repository URL or a local filesystem path
 
 **Multi-file structured output** producing organized markdown sections and draw.io diagrams
 

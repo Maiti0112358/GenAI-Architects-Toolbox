@@ -1,6 +1,6 @@
 ---
 name: threat-model
-description: Generate evidence-grounded STRIDE threat models from repositories or system descriptions, including data-flow diagrams, trust boundaries, attack trees, prioritized risk registers, and draw.io plus Markdown deliverables.
+description: Generate evidence-grounded STRIDE threat models from remote or local repositories or system descriptions, including data-flow diagrams, trust boundaries, attack trees, prioritized risk registers, and draw.io plus Markdown deliverables.
 allowed-tools: WebFetch, Bash(gh auth status:*), Bash(gh repo view:*), Bash(gh api repos/*:*), Bash(git clone:*), Bash(git rev-parse:*), Bash(git status:*), Read, Glob, Grep, Write, Agent
 ---
 
@@ -18,6 +18,15 @@ Parse $ARGUMENTS before analysis:
 | --force | Flag | Off |
 | --dry-run | Flag | Off |
 | --sections | Comma-separated section names | All | Run only specified analysis sections; list skipped sections in outputs |
+
+### Repository input and access
+
+The first positional value may be a remote GitHub URL, a local repository path, or a supplied system description. Quote local paths containing spaces.
+
+- For `http://` or `https://` input, classify the source as `REMOTE`, resolve access through the approved GitHub strategy, and clone at most once when needed.
+- For a local directory input, classify the source as `LOCAL`, resolve its canonical absolute path, and read it directly. Verify local Git branch and commit when available; for a non-Git directory record branch and commit as N/A. Do not call GitHub APIs, clone, or delete the supplied directory.
+- For a system description that is not a path or URL, treat it as supplied context and label all unverified properties as assumptions.
+- Record the original URL/path or supplied-context identifier, access method, commit or timestamp, branch, analysis path, inspected files, exclusions, and failures. Clean up only a temporary clone created for remote input.
 
 Resolve scope, repository access, and output paths before analysis. Resolve every output path and perform an overwrite check before writing. If conflicts exist and --force is absent, list them and stop. Create directories only after the check. If a monorepo has multiple plausible services and no --path is supplied, list them and stop for a scope choice.
 
