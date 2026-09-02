@@ -1,4 +1,5 @@
----
+﻿---
+name: arch-describe
 description: Generate a comprehensive architecture description document from a GitHub repository using 15 structured analysis sections
 allowed-tools: WebFetch, Bash(gh repo view:*), Bash(gh api repos/*:*), Bash(git clone:*), Read, Glob, Grep, Write, Agent
 ---

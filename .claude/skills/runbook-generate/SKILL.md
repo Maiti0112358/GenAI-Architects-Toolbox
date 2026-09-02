@@ -1,4 +1,5 @@
----
+﻿---
+name: runbook-generate
 description: Generate comprehensive operational runbooks from a GitHub repository including deployment, troubleshooting, scaling, and incident response procedures
 allowed-tools: WebFetch, Bash(gh auth status:*), Bash(gh repo view:*), Bash(gh api repos/*:*), Bash(git clone:*), Bash(Remove-Item:*), Read, Glob, Grep, Write, Agent
 ---
